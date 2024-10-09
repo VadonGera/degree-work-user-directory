@@ -33,16 +33,16 @@ services:
       retries: 3
       # Ожидание перед началом проверок
       start_period: 5s
-      # Порт, если нужно подключаться к базе данных с хоста (опционально)
-    #    ports:
-    #      - "5432:5432"
+    # Порт, если нужно подключаться к базе данных с хоста (опционально)
+#    ports:
+#      - "5432:5432"
     # Подключаем к сети my_backend
     networks:
-      - my_directory
+      - horse
 
 volumes:
   user_directory_data:
 
 networks:
-  my_directory:
+  horse:
     driver: bridge

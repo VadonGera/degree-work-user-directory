@@ -1,34 +1,25 @@
-from django.contrib.auth.models import Group
+from rest_framework import generics, viewsets
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import get_user_model
-from rest_framework import permissions, viewsets
-from users.serializers import GroupSerializer, UserSerializer
+# from .models import CustomUser
+from .serializers import UserSerializer, UserRegistrationSerializer
 
 User = get_user_model()
 
 
-class IsAdminOrSuperuser(permissions.BasePermission):
-    """
-    Разрешение, позволяющее доступ только администраторам и суперпользователям.
-    """
-
-    def has_permission(self, request, view):
-        return bool(request.user and (request.user.is_staff or request.user.is_superuser))
-        # return bool(request.user and request.user.is_superuser)
+class UserRegistrationView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [AllowAny]
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint, позволяющий просматривать или редактировать данные пользователей.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
+    queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdminOrSuperuser]
+    permission_classes = [IsAuthenticated]
 
-
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint, позволяющий просматривать или редактировать группы.
-    """
-    queryset = Group.objects.all().order_by('name')
-    serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdminOrSuperuser]
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return User.objects.all()
+        return User.objects.filter(id=user.id)

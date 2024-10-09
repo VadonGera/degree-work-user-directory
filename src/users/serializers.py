@@ -1,20 +1,23 @@
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-
 from rest_framework import serializers
 
 User = get_user_model()
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='user-detail')
-
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'groups']
+        fields = ('id', 'username', 'email', 'phone', 'address')
 
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Group
-        fields = ['url', 'name']
+        model = User
+        fields = ('username', 'email', 'password', 'phone', 'address')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User(**validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user

@@ -1,5 +1,5 @@
 # Задаём имя проекта
-name: study-user-directory
+name: user-directory
 # Указывает версию формата файла (вроде как устарело уже)
 # version: '3.8'
 
@@ -20,7 +20,7 @@ services:
       - POSTGRES_DB=${SQL_DATABASE}
     # Примонтируем том study_postgres_data к директории /var/lib/postgresql/data контейнера db
     volumes:
-      - user_directory_data:/var/lib/postgresql/data
+      - users_data:/var/lib/postgresql/data
     # Проверка состояния контейнера
     healthcheck:
       # Запускаем внутри контейнера проверку его состояния
@@ -36,12 +36,12 @@ services:
     # Порт, если нужно подключаться к базе данных с хоста (опционально)
     ports:
       - "5432:5432"
-    # Подключаем к сети my_backend
+    # Подключаем к сети horse
     networks:
       - horse
 
 volumes:
-  user_directory_data:
+  users_data:
 
 networks:
   horse:
